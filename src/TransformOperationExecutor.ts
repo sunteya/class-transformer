@@ -170,8 +170,8 @@ export class TransformOperationExecutor {
         }
 
         const valueKey = key;
-        let newValueKey = key,
-          propertyName = key;
+        let newValueKey = this.options.propertyFormat ? this.options.propertyFormat(key) : key,
+          propertyName = this.options.propertyFormat ? this.options.propertyFormat(key) : key;
         if (!this.options.ignoreDecorators && targetType) {
           if (this.transformationType === TransformationType.PLAIN_TO_CLASS) {
             const exposeMetadata = defaultMetadataStorage.findExposeMetadataByCustomName(targetType as Function, key);
@@ -319,6 +319,7 @@ export class TransformOperationExecutor {
               targetType as Function,
               transformKey,
               value,
+              valueKey,
               this.transformationType
             );
             // If nothing change, it means no custom transformation was applied, so use the subValue.
@@ -336,6 +337,7 @@ export class TransformOperationExecutor {
                 targetType as Function,
                 transformKey,
                 value,
+                valueKey,
                 this.transformationType
               );
             }
@@ -355,6 +357,7 @@ export class TransformOperationExecutor {
             targetType as Function,
             key,
             value,
+            valueKey,
             this.transformationType
           );
           if (finalValue !== undefined || this.options.exposeUnsetFields) {
@@ -382,6 +385,7 @@ export class TransformOperationExecutor {
     target: Function,
     key: string,
     obj: any,
+    valueKey: string,
     transformationType: TransformationType
   ): boolean {
     let metadatas = defaultMetadataStorage.findTransformMetadatas(target, key, this.transformationType);
@@ -409,7 +413,7 @@ export class TransformOperationExecutor {
     }
 
     metadatas.forEach(metadata => {
-      value = metadata.transformFn({ value, key, obj, type: transformationType, options: this.options });
+      value = metadata.transformFn({ value, key, obj, type: transformationType, valueKey, options: this.options });
     });
 
     return value;

@@ -76,4 +76,9 @@ export interface ClassTransformOptions {
    * DEFAULT: `true`
    */
   exposeUnsetFields?: boolean;
+
+  /**
+   * property name mapping
+   */
+  propertyFormat?(name: string): string;
 }
